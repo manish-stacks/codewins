@@ -1,0 +1,88 @@
+import type { FieldDef } from "@/components/admin/AdminForm";
+
+export const productFields: FieldDef[] = [
+  { name: "title", label: "Title", type: "text", required: true, full: true },
+  { name: "slug", label: "Slug", type: "text", help: "Leave blank to generate from title" },
+  { name: "category", label: "Category", type: "select", options: ["Admin Template", "HTML Template", "Dashboard Kit", "Plugin"] },
+  { name: "price", label: "Price (₹)", type: "number", required: true },
+  { name: "original", label: "Original price (₹)", type: "number" },
+  { name: "rating", label: "Rating", type: "number" },
+  { name: "sales", label: "Sales count", type: "number" },
+  { name: "order", label: "Sort order", type: "number" },
+  { name: "image", label: "Cover image URL", type: "url", full: true },
+  { name: "gallery", label: "Gallery image URLs", type: "lines", help: "One URL per line" },
+  { name: "tags", label: "Tags", type: "lines", help: "One tag per line" },
+  { name: "summary", label: "Summary", type: "textarea" },
+  { name: "features", label: "Features", type: "lines", help: "One per line" },
+  { name: "includes", label: "What's included", type: "lines", help: "One per line" },
+  { name: "demoUrl", label: "Live preview URL", type: "url" },
+  { name: "downloadUrl", label: "Download URL", type: "url", help: "Buyers download this after a paid order" },
+  { name: "version", label: "Version", type: "text", placeholder: "v1", help: "Bump (e.g. v2 → v3) to notify buyers of an update" },
+  { name: "changelog", label: "Changelog", type: "lines", help: "One note per line (optional)" },
+  { name: "seoTitle", label: "SEO title", type: "text", full: true, help: "Overrides the meta title on this product page" },
+  { name: "seoDesc", label: "SEO description", type: "textarea", help: "Overrides the meta description" },
+  { name: "featured", label: "Featured (show on homepage)", type: "checkbox" },
+  { name: "published", label: "Published (visible on storefront)", type: "checkbox" },
+];
+
+export const serviceFields: FieldDef[] = [
+  { name: "title", label: "Title", type: "text", required: true },
+  { name: "number", label: "Number", type: "text", placeholder: "01" },
+  { name: "slug", label: "Slug", type: "text", help: "Leave blank to generate from title" },
+  { name: "icon", label: "Icon", type: "select", options: ["code", "smartphone", "megaphone", "server", "palette", "search"] },
+  { name: "order", label: "Sort order", type: "number" },
+  { name: "description", label: "Short description", type: "textarea" },
+  { name: "longDescription", label: "Long description (detail page)", type: "richtext" },
+  { name: "image", label: "Image URL", type: "url", full: true },
+  { name: "features", label: "Features", type: "lines", help: "One per line" },
+  { name: "seoTitle", label: "SEO title", type: "text", full: true, help: "Overrides the meta title on this service page" },
+  { name: "seoDesc", label: "SEO description", type: "textarea" },
+  { name: "published", label: "Published", type: "checkbox" },
+];
+
+export const projectFields: FieldDef[] = [
+  { name: "name", label: "Name", type: "text", required: true },
+  { name: "slug", label: "Slug", type: "text", help: "Leave blank to generate from name" },
+  { name: "client", label: "Client", type: "text" },
+  { name: "category", label: "Category", type: "select", options: ["Government", "Medical & Hospital", "Schools & Institutes", "Other"] },
+  { name: "year", label: "Year", type: "text" },
+  { name: "location", label: "Location", type: "text" },
+  { name: "industry", label: "Industry", type: "text" },
+  { name: "scope", label: "Scope", type: "text" },
+  { name: "url", label: "Live URL", type: "url" },
+  { name: "order", label: "Sort order", type: "number" },
+  { name: "summary", label: "Summary", type: "textarea" },
+  { name: "description", label: "Description / case study", type: "richtext", help: "Rich text or paste HTML" },
+  { name: "cover", label: "Cover image URL", type: "url", full: true },
+  { name: "gallery", label: "Gallery image URLs", type: "lines", help: "One URL per line" },
+  { name: "seoTitle", label: "SEO title", type: "text", full: true, help: "Overrides the meta title on this project page" },
+  { name: "seoDesc", label: "SEO description", type: "textarea" },
+  { name: "featured", label: "Featured", type: "checkbox" },
+  { name: "published", label: "Published", type: "checkbox" },
+];
+
+export const blogFields: FieldDef[] = [
+  { name: "title", label: "Title", type: "text", required: true, full: true },
+  { name: "slug", label: "Slug", type: "text", help: "Leave blank to generate from title" },
+  { name: "category", label: "Category", type: "select", options: ["Insights", "Project News", "Studio", "Tutorials"] },
+  { name: "author", label: "Author", type: "text", placeholder: "CodeWins" },
+  { name: "readTime", label: "Read time (min)", type: "number" },
+  { name: "cover", label: "Cover image URL", type: "url", full: true },
+  { name: "excerpt", label: "Excerpt", type: "textarea" },
+  { name: "content", label: "Content", type: "richtext", full: true },
+  { name: "tags", label: "Tags", type: "lines", help: "One per line" },
+  { name: "seoTitle", label: "SEO title", type: "text" },
+  { name: "seoDesc", label: "SEO description", type: "textarea" },
+  { name: "published", label: "Published", type: "checkbox" },
+];
+
+export const couponFields: FieldDef[] = [
+  { name: "code", label: "Code", type: "text", required: true, placeholder: "WELCOME10" },
+  { name: "type", label: "Type", type: "select", options: ["PERCENT", "FLAT"] },
+  { name: "value", label: "Value", type: "number", help: "Percent (0–100) or flat ₹ amount" },
+  { name: "minSubtotal", label: "Min. subtotal (₹)", type: "number" },
+  { name: "maxDiscount", label: "Max discount (₹)", type: "number", help: "Cap for percent coupons (blank = none)" },
+  { name: "usageLimit", label: "Global usage limit", type: "number", help: "Blank = unlimited" },
+  { name: "perUserLimit", label: "Per-user limit", type: "number" },
+  { name: "active", label: "Active", type: "checkbox" },
+];

@@ -1,0 +1,349 @@
+// CodeWins Technologies — Prisma schema (MySQL)
+// Covers: auth, catalog (services/products/projects/blog), commerce
+// (orders/coupons/checkout), CMS content blocks, contact + settings.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+// ----------------------------------------------------------------------------
+// AUTH
+// ----------------------------------------------------------------------------
+enum Role {
+  USER
+  ADMIN
+}
+
+model User {
+  id           String   @id @default(cuid())
+  name         String
+  email        String   @unique
+  phone        String?
+  passwordHash String
+  role         Role     @default(USER)
+  avatar       String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  orders       Order[]
+  redemptions  CouponRedemption[]
+
+  @@index([role])
+}
+
+// ----------------------------------------------------------------------------
+// CATALOG
+// ----------------------------------------------------------------------------
+model Service {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  number      String                 // "01"
+  title       String
+  description String   @db.Text
+  icon        String                 // ServiceIconKey: code|smartphone|...
+  features    Json                   // string[]
+  // service-details extras
+  longDescription String? @db.Text
+  image       String?
+  faqs        Json?                  // { q, a }[]
+  seoTitle    String?
+  seoDesc     String?  @db.Text
+  published   Boolean  @default(true)
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([published])
+}
+
+model Product {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  title       String
+  category    String                 // Admin Template | HTML Template | ...
+  price       Int                    // INR, store paise? -> keep rupees (Int)
+  original    Int
+  image       String
+  gallery     Json                   // string[]
+  rating      Float    @default(5)
+  sales       Int      @default(0)
+  tags        Json                   // string[]
+  summary     String   @db.Text
+  features    Json                   // string[]
+  includes    Json                   // string[]
+  demoUrl     String?
+  downloadUrl String?                // digital delivery (admin-set)
+  version     String   @default("v1") // current release; bump to notify buyers
+  changelog   Json?                  // { version, date, notes }[] (optional)
+  seoTitle    String?
+  seoDesc     String?  @db.Text
+  featured    Boolean  @default(false)
+  published   Boolean  @default(true)
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  orderItems  OrderItem[]
+
+  @@index([category])
+  @@index([featured])
+  @@index([published])
+}
+
+model Project {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  name        String
+  client      String
+  category    String                 // Government | Medical & Hospital | ...
+  year        String
+  location    String
+  industry    String
+  scope       String
+  url         String
+  summary     String   @db.Text
+  description Json                   // string[]
+  cover       String
+  gallery     Json                   // string[]
+  seoTitle    String?
+  seoDesc     String?  @db.Text
+  featured    Boolean  @default(false)
+  published   Boolean  @default(true)
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([category])
+  @@index([featured])
+}
+
+model BlogPost {
+  id          String    @id @default(cuid())
+  slug        String    @unique
+  title       String
+  category    String                 // Project News | Insights | Studio ...
+  excerpt     String    @db.Text
+  content     String    @db.LongText // HTML / markdown body
+  cover       String
+  author      String    @default("CodeWins")
+  tags        Json?                  // string[]
+  readTime    Int       @default(4)  // minutes
+  seoTitle    String?
+  seoDesc     String?   @db.Text
+  published   Boolean   @default(true)
+  publishedAt DateTime  @default(now())
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([published])
+  @@index([category])
+}
+
+model Testimonial {
+  id        String   @id @default(cuid())
+  client    String
+  scope     String
+  quote     String   @db.Text
+  rating    Int      @default(5)
+  published Boolean  @default(true)
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+}
+
+// ----------------------------------------------------------------------------
+// CMS CONTENT BLOCKS (everything editable from admin)
+// ----------------------------------------------------------------------------
+model Stat {
+  id     String @id @default(cuid())
+  value  Int
+  prefix String?
+  suffix String?
+  label  String
+  group  String @default("home") // home | about
+  order  Int    @default(0)
+}
+
+model ProcessStep {
+  id          String @id @default(cuid())
+  number      String
+  title       String
+  description String @db.Text
+  order       Int    @default(0)
+}
+
+model Pillar {
+  id          String @id @default(cuid())
+  icon        String // zap | shield | headphones
+  title       String
+  description String @db.Text
+  order       Int    @default(0)
+}
+
+model ValueItem {
+  id          String @id @default(cuid())
+  number      String
+  title       String
+  description String @db.Text
+  order       Int    @default(0)
+}
+
+model Founder {
+  id    String @id @default(cuid())
+  name  String
+  role  String
+  image String
+  order Int    @default(0)
+}
+
+model TechItem {
+  id    String @id @default(cuid())
+  label String
+  image String @default("")
+  order Int    @default(0)
+}
+
+model GalleryImage {
+  id    String @id @default(cuid())
+  url   String
+  order Int    @default(0)
+}
+
+// Site-wide singletons: contact info, hero copy, about copy, social links...
+model Setting {
+  key   String @id            // e.g. "contact", "hero", "about"
+  value Json
+}
+
+// ----------------------------------------------------------------------------
+// COMMERCE
+// ----------------------------------------------------------------------------
+enum CouponType {
+  PERCENT
+  FLAT
+}
+
+model Coupon {
+  id           String     @id @default(cuid())
+  code         String     @unique
+  type         CouponType
+  value        Int                     // percent (0-100) or flat INR
+  minSubtotal  Int        @default(0)
+  maxDiscount  Int?                    // cap for percent coupons
+  usageLimit   Int?                    // global redemptions allowed
+  usedCount    Int        @default(0)
+  perUserLimit Int        @default(1)
+  active       Boolean    @default(true)
+  startsAt     DateTime?
+  expiresAt    DateTime?
+  createdAt    DateTime   @default(now())
+
+  orders       Order[]
+  redemptions  CouponRedemption[]
+}
+
+model CouponRedemption {
+  id        String   @id @default(cuid())
+  couponId  String
+  userId    String
+  orderId   String
+  createdAt DateTime @default(now())
+
+  coupon Coupon @relation(fields: [couponId], references: [id], onDelete: Cascade)
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([couponId])
+  @@index([userId])
+}
+
+enum OrderStatus {
+  PENDING
+  PAID
+  FAILED
+  REFUNDED
+}
+
+model Order {
+  id                String      @id @default(cuid())
+  orderNumber       String      @unique // human-friendly CW-XXXXXX
+  userId            String
+  status            OrderStatus @default(PENDING)
+
+  // customer snapshot (in case user edits profile later)
+  customerName      String
+  customerEmail     String
+  customerPhone     String?
+
+  subtotal          Int
+  discount          Int         @default(0)
+  total             Int
+  couponId          String?
+  couponCode        String?
+
+  // razorpay
+  razorpayOrderId   String?     @unique
+  razorpayPaymentId String?
+  razorpaySignature String?
+
+  confirmationSent  Boolean     @default(false) // atomic gate vs double-notify
+  paidAt            DateTime?
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+
+  user   User        @relation(fields: [userId], references: [id])
+  coupon Coupon?     @relation(fields: [couponId], references: [id])
+  items  OrderItem[]
+
+  @@index([userId])
+  @@index([status])
+}
+
+model OrderItem {
+  id        String  @id @default(cuid())
+  orderId   String
+  productId String
+  title     String                 // snapshot
+  image     String                 // snapshot
+  price     Int                    // snapshot
+  qty       Int     @default(1)
+  purchasedVersion String?           // product version at time of purchase
+
+  order   Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id])
+
+  @@index([orderId])
+  @@index([productId])
+}
+
+// ----------------------------------------------------------------------------
+// CONTACT
+// ----------------------------------------------------------------------------
+model ContactMessage {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  phone     String?
+  subject   String?
+  message   String   @db.Text
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([read])
+}
+
+// ----------------------------------------------------------------------------
+// NEWSLETTER
+// ----------------------------------------------------------------------------
+model Subscriber {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  source    String?  // where they subscribed from (e.g. "footer")
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+
+  @@index([active])
+}
