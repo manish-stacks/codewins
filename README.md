@@ -1,6 +1,6 @@
-# Atrium Design & Build — Interior Design & Build (Next.js 15 + GSAP)
+# Design & Build (Next.js 15 + GSAP)
 
-An enterprise-grade marketing site for an interior design-and-build firm, built with the
+An enterprise-grade marketing site, built with the
 Next.js App Router, TypeScript, Tailwind CSS, **GSAP (ScrollTrigger + useGSAP)** and Lucide
 icons. The structure and interaction model are inspired by leading Singapore fit-out studios;
 all copy, imagery and branding here are original placeholders you can swap for your own.
