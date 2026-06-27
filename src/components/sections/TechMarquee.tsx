@@ -9,17 +9,24 @@ function Item({ item }: { item: TechStackItem }) {
         title={item.label}
         className="mx-7 flex h-16 shrink-0 items-center gap-3 grayscale transition-all duration-300 hover:grayscale-0"
       >
-        <Image
-          src={item.image}
-          alt={item.label}
-          title={item.label}
-          width={48}
-          height={48}
-          className="h-10 w-auto object-contain lg:h-12"
-        />
-        <span className="font-display text-xl font-semibold tracking-tight text-ink/30 lg:text-2xl">
-          {item.label}
-        </span>
+        {
+          item.image ? (
+            <Image
+              src={item.image}
+              alt={item.label}
+              title={item.label}
+              width={300}
+              height={100}
+              className="h-10 w-full object-contain lg:h-12"
+            />
+          ) : (
+            <span className="font-display text-xl font-semibold tracking-tight text-ink/30 lg:text-2xl">
+              {item.label}
+            </span>
+            )
+        }
+
+
       </span>
     );
   }
